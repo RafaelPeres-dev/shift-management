@@ -1,7 +1,7 @@
 // src/app/employee/[companyId]/layout.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Settings, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -12,8 +12,9 @@ export default function EmployeeLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { companyId: string };
+  params: Promise<{ companyId: string }>;
 }) {
+  const { companyId } = use(params);
   const [userName, setUserName] = useState<string>('Carregando...');
   const router = useRouter();
 
@@ -49,7 +50,7 @@ export default function EmployeeLayout({
           
           <div className="flex items-center space-x-4">
             <Link 
-              href={`/employee/${params.companyId}/settings`}
+              href={`/employee/${companyId}/settings`}
               className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
               title="Definições de Conta"
             >

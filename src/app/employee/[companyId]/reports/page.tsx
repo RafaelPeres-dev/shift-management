@@ -1,12 +1,13 @@
 // src/app/employee/[companyId]/reports/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Filter, FileText, ArrowLeft, Calendar as CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import { generateEmployeeReport } from '@/lib/generatePDF';
 
-export default function ReportsPage({ params }: { params: { companyId: string } }) {
+export default function ReportsPage({ params }: { params: Promise<{ companyId: string }> }) {
+  const { companyId } = use(params);
   const [showFilters, setShowFilters] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -53,7 +54,7 @@ export default function ReportsPage({ params }: { params: { companyId: string } 
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-4">
-          <Link href={`/employee/${params.companyId}`} className="text-gray-500 hover:text-blue-600">
+          <Link href={`/employee/${companyId}`} className="text-gray-500 hover:text-blue-600">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Relatório de Horas</h1>
