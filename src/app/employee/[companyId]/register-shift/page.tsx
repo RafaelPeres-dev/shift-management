@@ -1,7 +1,7 @@
 // src/app/employee/[companyId]/register-shift/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Clock } from 'lucide-react';
@@ -14,7 +14,8 @@ interface CustomField {
   is_required: boolean;
 }
 
-export default function RegisterShiftPage({ params }: { params: { companyId: string } }) {
+export default function RegisterShiftPage({ params }: { params: Promise<{ companyId: string }> }) {
+  const { companyId } = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
@@ -32,12 +33,12 @@ export default function RegisterShiftPage({ params }: { params: { companyId: str
       const { data } = await supabase
         .from('company_custom_fields')
         .select('*')
-        .eq('company_id', params.companyId);
-      
+        .eq('company_id', companyId);
+
       if (data) setCustomFields(data);
     }
     loadCustomFields();
-  }, [params.companyId]);
+  }, [companyId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +52,7 @@ export default function RegisterShiftPage({ params }: { params: { companyId: str
       const { data: shift, error: shiftError } = await supabase
         .from('shifts')
         .insert({
-          company_id: params.companyId,
+          company_id: companyId,
           user_id: user.id,
           start_time: new Date(startTime).toISOString(),
           end_time: endTime ? new Date(endTime).toISOString() : null,
@@ -78,7 +79,7 @@ export default function RegisterShiftPage({ params }: { params: { companyId: str
         if (customError) throw customError;
       }
 
-      router.push(`/employee/${params.companyId}`);
+      router.push(`/employee/${companyId}`);
     } catch (error) {
       console.error('Erro ao registar turno:', error);
       alert('Erro ao registar o turno.');
@@ -94,7 +95,7 @@ export default function RegisterShiftPage({ params }: { params: { companyId: str
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
-        <Link href={`/employee/${params.companyId}`} className="text-gray-500 hover:text-blue-600">
+        <Link href={`/employee/${companyId}`} className="text-gray-500 hover:text-blue-600">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">Registar Turno</h1>
